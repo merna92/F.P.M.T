@@ -32,6 +32,7 @@ namespace software_API
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IFileService, FileService>();
             builder.Services.AddScoped<DatabaseTestService>();
+            builder.Services.AddScoped<DatabaseInitializationService>();
 
             // Add CORS
             builder.Services.AddCors(options =>
@@ -57,6 +58,13 @@ namespace software_API
             builder.Services.AddLogging();
 
             var app = builder.Build();
+
+            // Initialize database on startup
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbInitService = scope.ServiceProvider.GetRequiredService<DatabaseInitializationService>();
+                dbInitService.InitializeDatabaseAsync().Wait();
+            }
 
             // Use Global Exception Handling Middleware
             app.UseMiddleware<ExceptionHandlingMiddleware>();
