@@ -17,7 +17,47 @@ namespace software_API.Controllers
         }
 
         /// <summary>
-        /// Health check endpoint
+        /// Default health check endpoint
+        /// GET /api/health
+        /// </summary>
+        [HttpGet]
+        public IActionResult Default()
+        {
+            return Ok(new
+            {
+                success = true,
+                message = "API is running",
+                status = "OK",
+                timestamp = DateTime.UtcNow,
+                endpoints = new
+                {
+                    ping = "/api/health/ping",
+                    check = "/api/health/check",
+                    info = "/api/health/info",
+                    seedData = "/api/health/seed-data"
+                }
+            });
+        }
+
+        /// <summary>
+        /// Simple ping endpoint
+        /// GET /api/health/ping
+        /// </summary>
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok(new
+            {
+                success = true,
+                message = "Pong! API is alive",
+                status = "OK",
+                timestamp = DateTime.UtcNow
+            });
+        }
+
+        /// <summary>
+        /// Health check with database
+        /// GET /api/health/check
         /// </summary>
         [HttpGet("check")]
         public async Task<IActionResult> HealthCheck()
@@ -53,21 +93,28 @@ namespace software_API.Controllers
         }
 
         /// <summary>
-        /// Simple health check (no database)
+        /// Get API info
+        /// GET /api/health/info
         /// </summary>
-        [HttpGet("ping")]
-        public IActionResult Ping()
+        [HttpGet("info")]
+        public IActionResult GetInfo()
         {
             return Ok(new
             {
                 success = true,
-                message = "Pong! API is alive",
+                apiName = "Yad El-Awn (?? ?????)",
+                apiVersion = "1.0.0",
+                description = "Donation Management Platform",
+                environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development",
+                documentation = "/swagger",
+                baseUrl = $"{Request.Scheme}://{Request.Host}",
                 timestamp = DateTime.UtcNow
             });
         }
 
         /// <summary>
         /// Seed database with test data
+        /// POST /api/health/seed-data
         /// </summary>
         [HttpPost("seed-data")]
         public async Task<IActionResult> SeedData()
@@ -92,25 +139,6 @@ namespace software_API.Controllers
                     timestamp = DateTime.UtcNow
                 });
             }
-        }
-
-        /// <summary>
-        /// Get API info
-        /// </summary>
-        [HttpGet("info")]
-        public IActionResult GetInfo()
-        {
-            return Ok(new
-            {
-                success = true,
-                apiName = "Yad El-Awn (?? ?????)",
-                apiVersion = "1.0.0",
-                description = "Donation Management Platform",
-                environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development",
-                documentation = "/swagger",
-                baseUrl = $"{Request.Scheme}://{Request.Host}",
-                timestamp = DateTime.UtcNow
-            });
         }
     }
 }
