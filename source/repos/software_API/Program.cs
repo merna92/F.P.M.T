@@ -12,9 +12,20 @@ namespace software_API
             var builder = WebApplication.CreateBuilder(args);
             var env = builder.Environment;
 
-            // Add DbContext
+            // Add DbContext - Use PostgreSQL in Production, SQL Server in Development
             builder.Services.AddDbContext<YadElawnContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            {
+                if (env.IsProduction())
+                {
+                    // PostgreSQL for Railway
+                    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+                }
+                else
+                {
+                    // SQL Server for Local Development
+                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                }
+            });
 
             // Add Services
             builder.Services.AddScoped<IPasswordService, PasswordService>();
