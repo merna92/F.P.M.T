@@ -31,6 +31,7 @@ namespace software_API
             builder.Services.AddScoped<IPasswordService, PasswordService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IFileService, FileService>();
+            builder.Services.AddScoped<DatabaseTestService>();
 
             // Add CORS
             builder.Services.AddCors(options =>
