@@ -1,0 +1,1 @@
+﻿public class Clothes { public int DonationID { get; set; } public string? Clothes_Type { get; set; } public string? Size { get; set; } public string? Gender { get; set; } public string? Season { get; set; } public string? Condition { get; set; } public string? Material { get; set; } }

@@ -1,0 +1,39 @@
+# Build results
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# Visual Studio
+.vs/
+.vscode/
+*.csproj.user
+*.suo
+*.sln.docstates
+
+# Local environment
+appsettings.Development.json
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# NuGet
+packages/
+.nuget/
+
+# Build
+out/
+dist/

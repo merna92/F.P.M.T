@@ -1,0 +1,1 @@
+﻿public class Medicine { public int DonationID { get; set; } public string? Medicine_Name { get; set; } public string? Medicine_Type { get; set; } public DateTime Expiry_Date { get; set; } public string? Concentration { get; set; } public string? Quantity { get; set; } }
