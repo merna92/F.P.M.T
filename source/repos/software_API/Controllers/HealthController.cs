@@ -19,7 +19,7 @@ namespace software_API.Controllers
         /// <summary>
         /// Health check endpoint
         /// </summary>
-        [HttpGet("health")]
+        [HttpGet("check")]
         public async Task<IActionResult> HealthCheck()
         {
             try
@@ -34,7 +34,9 @@ namespace software_API.Controllers
                     database = isConnected ? "Connected" : "Disconnected",
                     totalUsers = userCount,
                     timestamp = DateTime.UtcNow,
-                    environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development"
+                    environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development",
+                    apiVersion = "1.0.0",
+                    apiName = "Yad El-Awn API"
                 });
             }
             catch (Exception ex)
@@ -44,9 +46,24 @@ namespace software_API.Controllers
                 {
                     success = false,
                     status = "API error",
-                    error = ex.Message
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
                 });
             }
+        }
+
+        /// <summary>
+        /// Simple health check (no database)
+        /// </summary>
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok(new
+            {
+                success = true,
+                message = "Pong! API is alive",
+                timestamp = DateTime.UtcNow
+            });
         }
 
         /// <summary>
@@ -58,13 +75,42 @@ namespace software_API.Controllers
             try
             {
                 await _dbTestService.SeedDefaultDataAsync();
-                return Ok(new { success = true, message = "Data seeded successfully" });
+                return Ok(new
+                {
+                    success = true,
+                    message = "Data seeded successfully",
+                    timestamp = DateTime.UtcNow
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Seed data failed");
-                return StatusCode(500, new { success = false, error = ex.Message });
+                return StatusCode(500, new
+                {
+                    success = false,
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
+                });
             }
+        }
+
+        /// <summary>
+        /// Get API info
+        /// </summary>
+        [HttpGet("info")]
+        public IActionResult GetInfo()
+        {
+            return Ok(new
+            {
+                success = true,
+                apiName = "Yad El-Awn (?? ?????)",
+                apiVersion = "1.0.0",
+                description = "Donation Management Platform",
+                environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development",
+                documentation = "/swagger",
+                baseUrl = $"{Request.Scheme}://{Request.Host}",
+                timestamp = DateTime.UtcNow
+            });
         }
     }
 }
