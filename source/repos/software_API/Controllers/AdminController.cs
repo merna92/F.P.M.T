@@ -135,17 +135,29 @@ namespace software_API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { success = false, message = "Invalid request data" });
 
-            var auditLog = new AuditLog
+            // Check if Admin exists
+            var adminExists = await _context.Admins.AnyAsync(a => a.AdminId == request.AdminId);
+            if (!adminExists)
+                return BadRequest(new { success = false, message = "Admin not found" });
+
+            try
             {
-                AdminId = request.AdminId,
-                ActionTaken = request.ActionTaken,
-                ActionDate = DateTime.UtcNow
-            };
+                var auditLog = new AuditLog
+                {
+                    AdminId = request.AdminId,
+                    ActionTaken = request.ActionTaken,
+                    ActionDate = DateTime.UtcNow
+                };
 
-            _context.AuditLogs.Add(auditLog);
-            await _context.SaveChangesAsync();
+                _context.AuditLogs.Add(auditLog);
+                await _context.SaveChangesAsync();
 
-            return Ok(new { success = true, message = "Audit log created successfully", logId = auditLog.LogId });
+                return Ok(new { success = true, message = "Audit log created successfully", logId = auditLog.LogId });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = "Error creating audit log", error = ex.Message });
+            }
         }
 
         // GET: api/admin/donations-by-type

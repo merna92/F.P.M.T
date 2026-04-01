@@ -10,29 +10,15 @@ namespace software_API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            var env = builder.Environment;
 
-            // Add DbContext - Use PostgreSQL in Production, SQL Server in Development
+            // Add DbContext - SQL Server Only
             builder.Services.AddDbContext<YadElawnContext>(options =>
-            {
-                if (env.IsProduction())
-                {
-                    // PostgreSQL for Railway
-                    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-                }
-                else
-                {
-                    // SQL Server for Local Development
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-                }
-            });
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add Services
             builder.Services.AddScoped<IPasswordService, PasswordService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IFileService, FileService>();
-            builder.Services.AddScoped<DatabaseTestService>();
-            builder.Services.AddScoped<DatabaseInitializationService>();
 
             // Add CORS
             builder.Services.AddCors(options =>
@@ -59,18 +45,10 @@ namespace software_API
 
             var app = builder.Build();
 
-            // Initialize database on startup
-            using (var scope = app.Services.CreateScope())
-            {
-                var dbInitService = scope.ServiceProvider.GetRequiredService<DatabaseInitializationService>();
-                dbInitService.InitializeDatabaseAsync().Wait();
-            }
-
             // Use Global Exception Handling Middleware
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            // Only show Swagger in Development
-            if (env.IsDevelopment())
+            if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
